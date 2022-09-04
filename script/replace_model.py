@@ -2366,7 +2366,7 @@ class Counter:
             "2391": "138",
             "2392": "1001",
             "2393": "2505",
-            "2394": "2500",
+            "10009": "2500",
             "2395": "028",
             "2396": "885",
             "2397": "062",
@@ -3002,12 +3002,13 @@ class Counter:
 
     def request(self, flow: mitmproxy.http.HTTPFlow):
         url = flow.request.url
-        for r_compile in self.RE_LIST:
-            url = r_compile.sub(
-                lambda x: x.group(0).replace(x.group(1), self.ROCK_ID_MAP.get(x.group(1), "11060")),
-                url
-            )
-        flow.request.url = url
+        if url.startswith("https://res.17roco.qq.com/res/combat/"):
+            for r_compile in self.RE_LIST:
+                url = r_compile.sub(
+                    lambda x: x.group(0).replace(x.group(1), self.ROCK_ID_MAP.get(x.group(1)) or x.group(1)),
+                    url
+                )
+            flow.request.url = url
 
 
 addons = [

@@ -1,5 +1,6 @@
 import os
 import atexit
+import subprocess
 import sys
 import winreg
 
@@ -42,16 +43,28 @@ def system_proxy(open_or_close, host, port):
         winreg.SetValueEx(hKey, value_name, 0, value_type, value)
 
 
+def chink_mitmproxy():
+    """
+        检测是否安装了 mitmproxy
+    :return:
+    """
+    output = subprocess.Popen(
+        ("mitmproxy", "--version"),
+        stdout=subprocess.PIPE).stdout
+    if 'Mitmproxy' not in output.read().decode(encoding='gbk', errors="ignore"):
+        print('检测到您没有安装代理 mitmproxy 将为您安装 mitmproxy')
+        os.system(os.path.join(BASE_DIR, "mitmproxy-8.1.1-windows-x64-installer.exe"))
+
+
 if __name__ == '__main__':
     # 启动时开启系统代理
     system_proxy(True, "127.0.0.1", 8080)
-    print("""服务已启动
-默认修改方式 
-    有前置宠物 使用前置宠物的模型
-    没有前置宠物的 使用相同系别模型
-有觉醒默认使用 金牛宫的觉醒 (后续再改)""")
+    print("服务已启动，将为您自动替换宠物资源")
+    print('*' * 100)
+    print("* 如果您是第一次启动，请启动 `证书安装.exe`，证书只需要安装一次 *")
+    print('*' * 100)
     os.system(
         r"mitmdump -q -s {}".format(
-            os.path.join(BASE_DIR, "replace_model.py")
+            os.path.join(BASE_DIR, "script/replace_model.py")
         )
     )
